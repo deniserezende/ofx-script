@@ -40,25 +40,22 @@ if os.path.exists(ofx_path):
                     logging.info(f'New transaction amount: {new_amount}.\n')
                     logging.info(f'transaction.date: {transaction.date}.\n')
 
+                    # TODO add regex between </TRNAMT> and <FITID>
+                    #  like r'([a-z|A-Z|0-9|<|>|\|/|\n| |\t|á|ê|é|â|ã]*)' ?
                     # Replace the target string
-                    regex = f'(<DTPOSTED>' + r'[\n| |\t]*' + f'{transaction.date.strftime("%Y")}' + \
-                    f'{transaction.date.strftime("%m")}{transaction.date.strftime("%d")}' + r'[\n| |\t]*' + \
-                            '</DTPOSTED>' + r'[\n| |\t]*' + f'<TRNAMT>' + r'[\n| |\t]*' + f'{transaction.amount}' + \
-                            r'[\n| |\t]*' + '</TRNAMT>' + r'[\n| |\t]*' + f'<FITID>' + r'[\n| |\t]*' + \
+                    regex = f'(<TRNAMT>' + r'[\n| |\t]*' + f'{transaction.amount}' + r'[\n| |\t]*' + '</TRNAMT>' + \
+                            r'[\n| |\t]*' + f'<FITID>' + r'[\n| |\t]*' + \
                             f'{transaction.id}' + r'[\n| |\t]*' + '</FITID>)'
 
-                    new_string = f"<DTPOSTED>{transaction.date.strftime('%Y')}{transaction.date.strftime('%m')}" \
-                                 f"{transaction.date.strftime('%d')}</DTPOSTED>\n" \
-                                 f"<TRNAMT>{new_amount}</TRNAMT>\n" \
-                                 f"<FITID>{transaction.id}</FITID>"
+                    new_string = f'<TRNAMT>{new_amount}</TRNAMT>\n' \
+                                 f'<FITID>{transaction.id}</FITID>'
 
-                    # if file_data.find(pattern) == -1:
-                    list = re.findall(regex, file_data)
-                    if len(list) == 0:
+                    patter_found_list = re.findall(regex, file_data)
+                    if len(patter_found_list) == 0:
                         logging.error("Editing file didn't work")
-                        logging.error(list[0])
-                    logging.info(list[0])
-                    file_data = file_data.replace(list[0], new_string)
+                        logging.error(patter_found_list[0])
+                    logging.info(patter_found_list[0])
+                    file_data = file_data.replace(patter_found_list[0], new_string)
 
     # Write the file out again
     # Removing the .ofx
