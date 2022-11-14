@@ -54,6 +54,7 @@ if os.path.exists(ofx_path):
                     if len(patter_found_list) == 0:
                         logging.error("Editing file didn't work")
                         logging.error(patter_found_list[0])
+                        sys.exit()
                     logging.info(patter_found_list[0])
                     file_data = file_data.replace(patter_found_list[0], new_string)
 
